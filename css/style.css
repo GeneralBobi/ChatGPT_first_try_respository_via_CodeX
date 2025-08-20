@@ -1,0 +1,107 @@
+/* Basic Reset & Body Style */
+body {
+    /* The background is a composite of a radial gradient and a solid color. */
+    /* The gradient's position is controlled by CSS custom properties (--x and --y) */
+    /* which will be updated by JavaScript to follow the cursor. */
+    background: radial-gradient(600px circle at var(--x, 50vw) var(--y, 50vh), rgba(255, 255, 255, 0.04), transparent 40%), #0d0d0d;
+    color: #e0e0e0; /* A soft white for text */
+    font-family: 'Georgia', serif; /* Elegant serif for the main text */
+    margin: 0;
+    overscroll-behavior: none; /* Prevents bounce on scroll */
+}
+
+/* Main world container centers the content */
+#world {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+    width: 100%;
+    padding: 2rem;
+    box-sizing: border-box;
+    perspective: 1000px; /* For potential 3D effects later */
+}
+
+/* Container for the scene text */
+#scene-container {
+    text-align: center;
+    max-width: 700px;
+    opacity: 0; /* Start hidden */
+    transform: translateY(20px);
+    transition: opacity 1.5s ease, transform 1.5s ease;
+}
+
+#scene-container.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Container for the scene text content, used for the 3D parallax effect */
+.scene-content {
+    transition: transform 0.2s linear;
+}
+
+/* Container for the choice buttons */
+#choices-container {
+    margin-top: 3rem;
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap; /* Allow choices to wrap on smaller screens */
+    justify-content: center;
+}
+
+/* Styling for the choice buttons */
+.choice-button {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.7);
+    padding: 1rem 2rem;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 1rem;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease, transform 0.8s ease, background-color 0.3s, color 0.3s, border-color 0.3s;
+    /* Delay the animation to appear after the main text */
+    transition-delay: 1.5s;
+}
+
+.choice-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.7);
+    color: #ffffff;
+}
+
+/* When the scene is visible, the buttons also become visible */
+#scene-container.is-visible + #choices-container .choice-button {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Stagger the animation for multiple choice buttons for a nice effect */
+#scene-container.is-visible + #choices-container .choice-button:nth-child(2) {
+    transition-delay: 1.7s;
+}
+#scene-container.is-visible + #choices-container .choice-button:nth-child(3) {
+    transition-delay: 1.9s;
+}
+
+
+/* Typography */
+h1 {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 300;
+    color: #ffffff;
+    margin: 0 0 2rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.2rem;
+}
+
+p {
+    font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+    line-height: 1.8;
+    color: #e0e0e0;
+    font-family: 'Georgia', serif;
+}
