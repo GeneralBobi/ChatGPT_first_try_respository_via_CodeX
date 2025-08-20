@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echo Chamber</title>
+    <style>
+        /* General Body Styles */
+        body {
+            background-color: #000000;
+            color: #FFFFFF;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            cursor: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        /* Cursor Dot */
+        .cursor-dot {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 10px;
+            height: 10px;
+            background-color: #FFFFFF;
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease-out;
+            box-shadow: 0 0 15px 5px rgba(255, 255, 255, 0.7);
+            animation: pulse 2s infinite;
+            z-index: 9999;
+        }
+
+        /* Initial Text & Quote Styles */
+        .text-container {
+            position: absolute;
+            bottom: 10%;
+            width: 100%;
+            opacity: 0;
+            animation: fadeIn 2s forwards;
+        }
+
+        .quote-container {
+            position: absolute;
+            width: 80%;
+            opacity: 0;
+            font-size: 2.5em;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Input Field & Submission Prompt */
+        .input-container {
+            position: absolute;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+        }
+
+        #thought-input {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid #FFFFFF;
+            color: #FFFFFF;
+            font-size: 2em;
+            text-align: center;
+            width: 50%;
+            outline: none;
+            padding: 10px;
+        }
+
+        #thought-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .submit-prompt {
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 20px;
+        }
+
+        /* Keyframe Animations */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 15px 5px rgba(255, 255, 255, 0.7);
+            }
+            50% {
+                transform: scale(1.2);
+                box-shadow: 0 0 25px 10px rgba(255, 255, 255, 0.7);
+            }
+            100% {
+                transform: scale(1);
+                box-shadow: 0 0 15px 5px rgba(255, 255, 255, 0.7);
+            }
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+            }
+        }
+
+        /* Burst effect for the dot */
+        .burst {
+            animation: burst-animation 0.5s forwards;
+        }
+
+        @keyframes burst-animation {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(5);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cursor Dot -->
+    <div class="cursor-dot"></div>
+
+    <!-- Initial Text -->
+    <div class="text-container">
+        <h1>What's on your mind?</h1>
+    </div>
+
+    <!-- Quote Display -->
+    <div class="quote-container hidden">
+        <p id="quote-text"></p>
+    </div>
+
+    <!-- Submission Form -->
+    <div class="input-container hidden">
+        <input type="text" id="thought-input" placeholder="Share your thought..." autocomplete="off">
+        <p class="submit-prompt">Press ENTER to submit.</p>
+    </div>
+
+    <script>
+        // --- DOM Elements ---
+        const cursorDot = document.querySelector('.cursor-dot');
+        const textContainer = document.querySelector('.text-container');
+        const quoteContainer = document.querySelector('.quote-container');
+        const quoteText = document.getElementById('quote-text');
+        const inputContainer = document.querySelector('.input-container');
+        const thoughtInput = document.getElementById('thought-input');
+
+        // --- State ---
+        let currentState = 'initial'; // initial | quote | submission
+        const quotes = [
+            "The silence is an echo.",
+            "Am I real?",
+            "The light from a thousand pasts.",
+            "Just a memory.",
+            "A whisper in the void."
+        ];
+        const thoughts = []; // Temporary storage for user thoughts
+
+        // --- Logic ---
+
+        // 1. Cursor Follow Logic
+        document.addEventListener('mousemove', e => {
+            cursorDot.style.left = `${e.clientX}px`;
+            cursorDot.style.top = `${e.clientY}px`;
+        });
+
+        // 2. Click Event and State Transitions
+        document.addEventListener('click', () => {
+            if (currentState === 'initial') {
+                // --- Transition to Quote State ---
+                currentState = 'quote';
+
+                // Burst effect
+                cursorDot.classList.add('burst');
+                setTimeout(() => cursorDot.classList.remove('burst'), 500); // Reset after animation
+
+                // Fade out initial text
+                textContainer.style.animation = 'fadeOut 1s forwards';
+
+                // Show a random quote after a short delay
+                setTimeout(() => {
+                    textContainer.classList.add('hidden');
+                    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+                    quoteText.textContent = randomQuote;
+                    quoteContainer.classList.remove('hidden');
+                    quoteContainer.style.animation = 'fadeIn 1s forwards';
+
+                    // Set timer to transition to submission state
+                    setTimeout(transitionToSubmission, 5000);
+                }, 1000); // Wait for text to fade out
+            }
+        });
+
+        function transitionToSubmission() {
+            if (currentState !== 'quote') return;
+            currentState = 'submission';
+
+            // Fade out quote
+            quoteContainer.style.animation = 'fadeOut 1s forwards';
+
+            // Show input field after quote fades out
+            setTimeout(() => {
+                quoteContainer.classList.add('hidden');
+                inputContainer.classList.remove('hidden');
+                inputContainer.style.animation = 'fadeIn 1s forwards';
+                thoughtInput.focus();
+            }, 1000);
+        }
+
+        // 3. Submission Logic
+        thoughtInput.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && currentState === 'submission') {
+                const thought = thoughtInput.value.trim();
+                if (thought) {
+                    thoughts.push(thought); // Store the thought
+                    console.log('User thoughts:', thoughts); // For debugging
+                    resetToInitial();
+                }
+            }
+        });
+
+        function resetToInitial() {
+            // Fade out input container
+            inputContainer.style.animation = 'fadeOut 1s forwards';
+
+            // Reset to initial state after fade out
+            setTimeout(() => {
+                inputContainer.classList.add('hidden');
+                thoughtInput.value = '';
+
+                // Reset animations and show initial text
+                textContainer.classList.remove('hidden');
+                textContainer.style.animation = 'fadeIn 2s forwards';
+
+                currentState = 'initial';
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
