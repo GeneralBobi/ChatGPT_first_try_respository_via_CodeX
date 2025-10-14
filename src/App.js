@@ -18,7 +18,7 @@ const initialStyles = [
 ];
 
 function App() {
-  const [styles, setStyles] = useState(initialStyles);
+  const [styles] = useState(initialStyles);
   const [currentStyleIndex, setCurrentStyleIndex] = useState(0);
 
   const handleSwipe = () => {
